@@ -205,7 +205,6 @@ local BY = Gyro:CreateTab("Universal Bypasses", "apple")
 local Button = BY:CreateButton({
 	Name = "RROOT",
 	Callback = function()
-	character.Parent = workspace
 	character.HumanoidRootPart:Destory()
 	end,
  })
