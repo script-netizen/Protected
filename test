@@ -202,8 +202,10 @@ local ClickToTpButton = Uni:CreateButton({
 
 local BY = Gyro:CreateTab("Universal Bypasses", "apple")
 
+local Section = BY:CreateSection("[UNSAFE]")
+
 local Button = BY:CreateButton({
-	Name = "Universal Bypass #1 [UNSAFE]",
+	Name = "Universal Bypass #1",
 	Callback = function()
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/Next1x/Nextix./main/UniversalACBypass"))()
 	end,
