@@ -9,10 +9,10 @@ local humanoid = character:WaitForChild("Humanoid")
 local originalWalkSpeed = humanoid.WalkSpeed
 
 -- Load Rayfield library
-local Menu = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -- Create the main window
-local Gyro = Menu:CreateWindow({
+local Window = Rayfield:CreateWindow({
     Name = "Gyro",
     Icon = "rewind", -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
     LoadingTitle = "Made by Youtuber SaucePan-0",
@@ -47,11 +47,11 @@ local Gyro = Menu:CreateWindow({
 })
 
 -- Create a tab and section
-local Uni = Gyro:CreateTab("Main", "anvil")
-local Section = Uni:CreateSection("Universal")
+local Tab = Window:CreateTab("Main", "anvil")
+local Section = Tab:CreateSection("Universal")
 
 -- Create a button
-local Button = Uni:CreateButton({
+local Button = Tab:CreateButton({
     Name = "Anti Chat Logger",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/AnthonyIsntHere/anthonysrepository/main/scripts/AntiChatLogger.lua", true))()
@@ -65,10 +65,10 @@ local Button = Uni:CreateButton({
 })
 
 -- Create a toggle for noclip
-local NoclipToggle = Uni:CreateToggle({
+local NoclipToggle = Tab:CreateToggle({
     Name = "Noclip",
     CurrentValue = false,
-    Flag = "NoclipToggle", -- Unique flag for configuration saving
+    Flag = "NoclipToggle",
     Callback = function(Value)
         Noclip = Value
         if Noclip then
@@ -76,9 +76,9 @@ local NoclipToggle = Uni:CreateToggle({
                 AttNoclip:Disconnect()
             end
             AttNoclip = game:GetService('RunService').Stepped:Connect(function()
-                if Noclip and game.Players.LocalPlayer.Character then
+                if game.Players.LocalPlayer.Character then
                     for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-                        if v:IsA('BasePart') and v.CanCollide then
+                        if v:IsA('BasePart') then
                             v.CanCollide = false
                         end
                     end
@@ -94,24 +94,29 @@ local NoclipToggle = Uni:CreateToggle({
 })
 
 -- Create a toggle for infinite jump
-local InfiniteJumpToggle = Uni:CreateToggle({
+local InfiniteJumpConnection = nil
+
+local InfiniteJumpToggle = Tab:CreateToggle({
     Name = "Infinite Jump",
     CurrentValue = false,
-    Flag = "InfiniteJumpToggle", -- Unique flag for configuration saving
+    Flag = "InfiniteJumpToggle",
     Callback = function(Value)
         InfiniteJump = Value
         if InfiniteJump then
-            game:GetService("UserInputService").JumpRequest:Connect(function()
-                if InfiniteJump and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+            InfiniteJumpConnection = game:GetService("UserInputService").JumpRequest:Connect(function()
+                if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
                     game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
                 end
             end)
+        else
+            if InfiniteJumpConnection then
+                InfiniteJumpConnection:Disconnect()
+                InfiniteJumpConnection = nil
+            end
         end
     end,
 })
 
--- Speed Manipulation Script (Client-Side)
--- DO NOT MODIFY THE MANIPULATION SPEED SCRIPT AND ITS METATABLE FUNCTIONS
 local function updateSpeed()
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         player.Character.Humanoid.WalkSpeed = desiredClientSpeed
@@ -162,7 +167,7 @@ player.CharacterAdded:Connect(function()
 end)
 
 -- Create a slider for speed manipulation
-local SpeedSlider = Uni:CreateSlider({
+local SpeedSlider = Tab:CreateSlider({
     Name = "Speed v2",
     Range = {0, 100},
     Increment = 1,
@@ -176,7 +181,7 @@ local SpeedSlider = Uni:CreateSlider({
 })
 
 -- Click-to-Teleport Tool
-local ClickToTpButton = Uni:CreateButton({
+local ClickToTpButton = Tab:CreateButton({
     Name = "Click to Teleport Tool",
     Callback = function()
         local tool = Instance.new("Tool")
@@ -200,13 +205,13 @@ local ClickToTpButton = Uni:CreateButton({
     end,
 })
 
-local BY = Gyro:CreateTab("Universal Bypasses", "apple")
+local Tab = Window:CreateTab("Universal Bypasses", "apple")
 
-local Section = BY:CreateSection("[UNSAFE]")
+local Section = Tab:CreateSection("UNSAFE")
 
-local Button = BY:CreateButton({
-	Name = "Universal Bypass #1",
+local Button = Tab:CreateButton({
+	Name = "Universal Bypass #1 ",
 	Callback = function()
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/Next1x/Nextix./main/UniversalACBypass"))()
 	end,
- })
+})
