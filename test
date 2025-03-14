@@ -215,3 +215,10 @@ local Button = Tab:CreateButton({
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/Next1x/Nextix./main/UniversalACBypass"))()
 	end,
 })
+
+local Button = Tab:CreateButton({
+	Name = "Anti CFRAME Teleport",
+	Callback = function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/script-netizen/Scripts/refs/heads/main/antianti-cframe"))()
+	end,
+})
