@@ -3,7 +3,6 @@ local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
 
 -- Create the main GUI container
 local KeyUI = Instance.new("ScreenGui")
@@ -31,19 +30,11 @@ MainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
 MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
 MainFrame.BorderSizePixel = 0
 MainFrame.ZIndex = 2
-MainFrame.ClipsDescendants = true
 
 -- Add corner rounding
 local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 12)
 UICorner.Parent = MainFrame
-
--- Add subtle drop shadow
-local UIStroke = Instance.new("UIStroke")
-UIStroke.Parent = MainFrame
-UIStroke.Color = Color3.fromRGB(60, 60, 70)
-UIStroke.Thickness = 2
-UIStroke.Transparency = 0.7
 
 -- Header with gradient
 local Header = Instance.new("Frame")
@@ -127,7 +118,7 @@ TextBox.TextScaled = false
 TextBox.ShowNativeInput = false
 TextBox.ZIndex = 4
 
--- Submit button
+-- Submit button (now properly visible and clickable)
 local SubmitButton = Instance.new("TextButton")
 SubmitButton.Name = "SubmitButton"
 SubmitButton.Parent = MainFrame
@@ -140,19 +131,11 @@ SubmitButton.TextColor3 = Color3.white
 SubmitButton.TextSize = 18
 SubmitButton.Font = Enum.Font.GothamBold
 SubmitButton.ZIndex = 3
+SubmitButton.AutoButtonColor = true -- Ensures button color changes on hover
 
 local SubmitCorner = Instance.new("UICorner")
 SubmitCorner.CornerRadius = UDim.new(0, 8)
 SubmitCorner.Parent = SubmitButton
-
--- Button hover effect
-SubmitButton.MouseEnter:Connect(function()
-    TweenService:Create(SubmitButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(100, 140, 220)}):Play()
-end)
-
-SubmitButton.MouseLeave:Connect(function()
-    TweenService:Create(SubmitButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(80, 120, 200)}):Play()
-end)
 
 -- Status message label
 local StatusLabel = Instance.new("TextLabel")
@@ -168,7 +151,7 @@ StatusLabel.BackgroundTransparency = 1
 StatusLabel.TextXAlignment = Enum.TextXAlignment.Center
 StatusLabel.ZIndex = 3
 
--- Hide the actual text being typed with animation
+-- Hide the actual text being typed
 TextBox:GetPropertyChangedSignal("Text"):Connect(function()
     local text = TextBox.Text
     if #text > 0 then
@@ -199,18 +182,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- Animate the UI on load
-MainFrame.Size = UDim2.new(0, 0, 0, 0)
-MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-MainFrame.BackgroundTransparency = 1
-
-local openTween = TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-    Size = UDim2.new(0, 400, 0, 300),
-    Position = UDim2.new(0.5, -200, 0.5, -150),
-    BackgroundTransparency = 0
-})
-openTween:Play()
-
 -- Key verification function
 local function verifyKey()
     local actualInput = TextBox:GetAttribute("RealText") or ""
@@ -218,22 +189,20 @@ local function verifyKey()
         StatusLabel.Text = "Key verified! Loading..."
         StatusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
         
-        -- Animate success
-        local pulseTween = TweenService:Create(SubmitButton, TweenInfo.new(0.3), {
-            BackgroundColor3 = Color3.fromRGB(100, 255, 100),
-            Text = "SUCCESS!"
-        })
-        pulseTween:Play()
+        -- Change button to success state
+        SubmitButton.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
+        SubmitButton.Text = "SUCCESS!"
         
-        -- Close animation
-        local closeTween = TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-            Size = UDim2.new(0, 0, 0, 0),
-            Position = UDim2.new(0.5, 0, 0.5, 0),
-            BackgroundTransparency = 1
-        })
-        closeTween:Play()
+        -- Simple fade out instead of complex animation
+        for i = 1, 10 do
+            MainFrame.BackgroundTransparency = i/10
+            Header.BackgroundTransparency = i/10
+            InputContainer.BackgroundTransparency = i/10
+            SubmitButton.BackgroundTransparency = i/10
+            BackgroundDimmer.BackgroundTransparency = 0.5 + (i/20)
+            task.wait(0.05)
+        end
         
-        closeTween.Completed:Wait()
         KeyUI:Destroy()
         
         -- Place-specific execution
@@ -258,30 +227,17 @@ local function verifyKey()
             warn("No action defined for place ID:", currentPlaceId)
         end
     else
-        -- Shake animation for invalid key
-        local shakeInfo = TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 5, true)
-        local shakeTween = TweenService:Create(MainFrame, shakeInfo, {
-            Position = UDim2.new(0.5, -200 + math.random(-10, 10), 0.5, -150)
-        })
-        shakeTween:Play()
-        
         StatusLabel.Text = "Invalid key! Please try again."
         StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
         
         TextBox.Text = ""
         TextBox:SetAttribute("RealText", nil)
         
-        -- Flash red
-        local flashTween = TweenService:Create(SubmitButton, TweenInfo.new(0.2), {
-            BackgroundColor3 = Color3.fromRGB(200, 80, 80)
-        })
-        flashTween:Play()
-        
-        flashTween.Completed:Connect(function()
-            TweenService:Create(SubmitButton, TweenInfo.new(0.2), {
-                BackgroundColor3 = Color3.fromRGB(80, 120, 200)
-            }):Play()
-        end)
+        -- Simple red flash for error
+        local originalColor = SubmitButton.BackgroundColor3
+        SubmitButton.BackgroundColor3 = Color3.fromRGB(200, 80, 80)
+        task.wait(0.2)
+        SubmitButton.BackgroundColor3 = originalColor
     end
 end
 
@@ -294,9 +250,4 @@ end)
 
 SubmitButton.MouseButton1Click:Connect(function()
     verifyKey()
-end)
-
--- Make sure the UI stays on top
-RunService.Heartbeat:Connect(function()
-    KeyUI.DisplayOrder = 999999
 end)
