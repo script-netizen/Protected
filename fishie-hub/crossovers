@@ -1,0 +1,206 @@
+-- Crossovers - Fishie Hub
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+-- Create the main window
+local Window = Rayfield:CreateWindow({
+    Name = "Crossovers - Fishie Hub",
+    LoadingTitle = "Fishie Hub is loading...",
+    LoadingSubtitle = "by Fishie | v1.3",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "FishieHub",
+        FileName = "CrossoversConfig"
+    },
+    Discord = {
+        Enabled = true,
+        Invite = "discord.gg/bmdgjcucw9",
+        RememberJoins = true
+    },
+    KeySystem = true,
+    KeySettings = {
+        Title = "Fishie Hub - Key System",
+        Subtitle = "Join our Discord for key",
+        Note = "Discord: discord.gg/bmdgjcucw9",
+        FileName = "FishieKey",
+        SaveKey = true,
+        GrabKeyFromSite = false,
+        Key = {"Fishie-0023"}
+    }
+})
+
+-- Apply Ocean theme
+Window:ModifyTheme('Ocean')
+
+-- Create the main tab
+local MainTab = Window:CreateTab("Main", 13753691652)
+
+-- Player tracking variables
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- Improved No CD function with proper timing and deep copying
+local function executeNoCDSequence()
+    local backpack = player:FindFirstChild("Backpack")
+    if not backpack then
+        warn("No backpack found!")
+        return false
+    end
+
+    -- Function to create a deep copy of a tool
+    local function copyTool(tool)
+        local copy = tool:Clone()
+        return copy
+    end
+
+    -- Copy all tools from the backpack
+    local toolCopies = {}
+    for _, tool in ipairs(backpack:GetChildren()) do
+        if tool:IsA("Tool") then
+            local toolCopy = copyTool(tool)
+            table.insert(toolCopies, toolCopy)
+        end
+    end
+
+    -- Delete all tools from the backpack
+    local children = backpack:GetChildren()
+    for i = #children, 1, -1 do
+        local tool = children[i]
+        if tool:IsA("Tool") then
+            tool:Destroy()
+        end
+    end
+
+    task.wait(0.5)
+
+    -- Restore all tools to the backpack
+    for _, toolCopy in ipairs(toolCopies) do
+        toolCopy.Parent = backpack
+    end
+
+    return true
+end
+
+-- No CD Toggle with single execution and death handling
+local NoCDToggle = MainTab:CreateToggle({
+    Name = "No Cooldown (Single Execution)",
+    CurrentValue = false,
+    Flag = "NoCDToggle",
+    Callback = function(Value)
+        if Value then
+            -- Enable No CD
+            local deathConnection
+            
+            -- Initial execution
+            pcall(executeNoCDSequence)
+            
+            -- Set up death handler
+            deathConnection = humanoid.Died:Connect(function()
+                -- Wait for respawn
+                repeat task.wait() until player.Character and player.Character:FindFirstChild("Humanoid")
+                character = player.Character
+                humanoid = character:WaitForChild("Humanoid")
+                
+                -- Re-execute No CD after respawn
+                task.wait(1)
+                pcall(executeNoCDSequence)
+            end)
+            
+            -- Cleanup function when toggle is turned off
+            return function()
+                if deathConnection then
+                    deathConnection:Disconnect()
+                end
+            end
+        end
+    end
+})
+
+-- Hitbox Expander
+local hitboxSize = 5 -- Default size
+local hitboxActive = false
+local hitboxConnections = {}
+
+local function updateHitboxes(size)
+    -- Clear existing connections
+    for _, conn in pairs(hitboxConnections) do
+        conn:Disconnect()
+    end
+    hitboxConnections = {}
+
+    -- Process all current players
+    for _, otherPlayer in ipairs(game.Players:GetPlayers()) do
+        if otherPlayer ~= player then
+            -- Check team if the game uses teams
+            local applyHitbox = true
+            if player.Team and otherPlayer.Team then
+                applyHitbox = (player.Team ~= otherPlayer.Team)
+            end
+
+            if applyHitbox then
+                local function processCharacter(char)
+                    local head = char:FindFirstChild("Head")
+                    if head then
+                        -- Remove existing hitbox if any
+                        if head:FindFirstChild("OriginalSize") then
+                            head.Size = head.OriginalSize.Value
+                            head.OriginalSize:Destroy()
+                        end
+                        
+                        if hitboxActive then
+                            -- Save original size
+                            local original = Instance.new("Vector3Value")
+                            original.Name = "OriginalSize"
+                            original.Value = head.Size
+                            original.Parent = head
+                            
+                            -- Apply new size
+                            head.Size = Vector3.new(size, size, size)
+                            
+                            -- Remove collision
+                            head.CanCollide = false
+                        end
+                    end
+                end
+
+                -- Process existing character
+                if otherPlayer.Character then
+                    processCharacter(otherPlayer.Character)
+                end
+
+                -- Connect to character added event
+                local conn = otherPlayer.CharacterAdded:Connect(processCharacter)
+                table.insert(hitboxConnections, conn)
+            end
+        end
+    end
+end
+
+-- Hitbox Expander Input
+local HitboxInput = MainTab:CreateInput({
+    Name = "Hitbox Expander",
+    PlaceholderText = "Enter size (default: 5)",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        local num = tonumber(Text)
+        if num then
+            hitboxSize = math.clamp(num, 1, 50)
+            if hitboxActive then
+                updateHitboxes(hitboxSize)
+            end
+        end
+    end,
+})
+
+-- Hitbox Toggle
+local HitboxToggle = MainTab:CreateToggle({
+    Name = "Enable Hitbox Expander",
+    CurrentValue = false,
+    Flag = "HitboxToggle",
+    Callback = function(Value)
+        hitboxActive = Value
+        updateHitboxes(hitboxActive and hitboxSize or 0)
+    end
+})
+
+Rayfield:LoadConfiguration()
