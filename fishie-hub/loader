@@ -1,0 +1,117 @@
+-- Key System with Multi-Place Support
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+-- Create the GUI
+local KeyUI = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local TextBox = Instance.new("TextBox")
+local TextLabel = Instance.new("TextLabel")
+
+-- GUI Setup
+KeyUI.Name = "KeySystem"
+KeyUI.Parent = PlayerGui
+KeyUI.ResetOnSpawn = false
+
+Frame.Parent = KeyUI
+Frame.Size = UDim2.new(0, 300, 0, 150)
+Frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+Frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+
+TextLabel.Parent = Frame
+TextLabel.Size = UDim2.new(1, 0, 0, 50)
+TextLabel.Position = UDim2.new(0, 0, 0, 10)
+TextLabel.Text = "Enter Key:"
+TextLabel.TextColor3 = Color3.white
+TextLabel.TextSize = 20
+TextLabel.BackgroundTransparency = 1
+
+TextBox.Parent = Frame
+TextBox.Size = UDim2.new(0.8, 0, 0, 30)
+TextBox.Position = UDim2.new(0.1, 0, 0.4, 0)
+TextBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+TextBox.TextColor3 = Color3.white
+TextBox.Text = ""
+TextBox.PlaceholderText = "Enter key..."
+TextBox.Font = Enum.Font.SourceSans
+TextBox.TextSize = 18
+TextBox.ClearTextOnFocus = false
+TextBox.TextScaled = false
+TextBox.ShowNativeInput = false -- Hide key on mobile
+
+-- Hide the actual text being typed
+TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local text = TextBox.Text
+    if #text > 0 then
+        TextBox.Text = string.rep("*", #text)
+    end
+end)
+
+-- Key verification and place-specific execution
+TextBox.FocusLost:Connect(function(enterPressed)
+    if not enterPressed then return end
+    
+    local actualInput = TextBox:GetAttribute("RealText") or ""
+    if actualInput == "Fishie-Hub" then
+        KeyUI:Destroy()
+        
+        -- Place-specific execution
+        local placeActions = {
+            [12843081406] = function()
+                -- Code for place 12843081406
+                print("Executing code for place 12843081406")
+                loadstring(game:HttpGet("YOUR_SCRIPT_URL_1"))()
+            end,
+            [123456789] = function()  -- Example other place ID
+                -- Code for place 123456789
+                print("Executing code for place 123456789")
+                loadstring(game:HttpGet("YOUR_SCRIPT_URL_2"))()
+            end,
+            [987654321] = function()  -- Example other place ID
+                -- Code for place 987654321
+                print("Executing code for place 987654321")
+                loadstring(game:HttpGet("YOUR_SCRIPT_URL_3"))()
+            end
+        }
+        
+        local currentPlaceId = game.PlaceId
+        local action = placeActions[currentPlaceId]
+        
+        if action then
+            pcall(action)
+        else
+            warn("No action defined for place ID:", currentPlaceId)
+        end
+    else
+        TextBox.Text = ""
+        TextBox:SetAttribute("RealText", nil)
+        TextLabel.Text = "Invalid Key! Try Again"
+        task.wait(1)
+        TextLabel.Text = "Enter Key:"
+    end
+end)
+
+-- Store the real text in a hidden attribute
+UserInputService = game:GetService("UserInputService")
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed or not TextBox:IsFocused() then return end
+    
+    if input.UserInputType == Enum.UserInputType.Keyboard then
+        local key = input.KeyCode.Name
+        if #key == 1 or key == "Space" then
+            local current = TextBox:GetAttribute("RealText") or ""
+            if key == "Space" then
+                key = " "
+            end
+            
+            if input.KeyCode == Enum.KeyCode.Backspace then
+                current = current:sub(1, -2)
+            else
+                current = current .. key
+            end
+            
+            TextBox:SetAttribute("RealText", current)
+        end
+    end
+end)
