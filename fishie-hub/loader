@@ -6,13 +6,13 @@ local TweenService = game:GetService("TweenService")
 
 -- Create the main GUI container
 local KeyUI = Instance.new("ScreenGui")
-KeyUI.Name = "KeySystemPremium"
+KeyUI.Name = "AutoKeySystem"
 KeyUI.Parent = PlayerGui
 KeyUI.ResetOnSpawn = false
 KeyUI.ZIndexBehavior = Enum.ZIndexBehavior.Global
-KeyUI.DisplayOrder = 999999  -- Ensure it's always on top
+KeyUI.DisplayOrder = 999999
 
--- Create a full-screen background dimmer
+-- Background dimmer
 local BackgroundDimmer = Instance.new("Frame")
 BackgroundDimmer.Name = "BackgroundDimmer"
 BackgroundDimmer.Parent = KeyUI
@@ -21,27 +21,27 @@ BackgroundDimmer.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 BackgroundDimmer.BackgroundTransparency = 0.5
 BackgroundDimmer.ZIndex = 1
 
--- Main container frame with modern styling
+-- Main frame
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = KeyUI
-MainFrame.Size = UDim2.new(0, 400, 0, 300)
-MainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
-MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+MainFrame.Size = UDim2.new(0, 350, 0, 200)
+MainFrame.Position = UDim2.new(0.5, -175, 0.5, -100)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
 MainFrame.BorderSizePixel = 0
 MainFrame.ZIndex = 2
 
--- Add corner rounding
+-- UI Corners
 local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 12)
 UICorner.Parent = MainFrame
 
--- Header with gradient
+-- Header
 local Header = Instance.new("Frame")
 Header.Name = "Header"
 Header.Parent = MainFrame
-Header.Size = UDim2.new(1, 0, 0, 60)
-Header.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+Header.Size = UDim2.new(1, 0, 0, 50)
+Header.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
 Header.BorderSizePixel = 0
 Header.ZIndex = 3
 
@@ -49,50 +49,27 @@ local HeaderCorner = Instance.new("UICorner")
 HeaderCorner.CornerRadius = UDim.new(0, 12)
 HeaderCorner.Parent = Header
 
--- Gradient for header
-local UIGradient = Instance.new("UIGradient")
-UIGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(80, 120, 200)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 70, 180))
-})
-UIGradient.Rotation = 90
-UIGradient.Parent = Header
-
--- Title text
+-- Title
 local Title = Instance.new("TextLabel")
 Title.Name = "Title"
 Title.Parent = Header
 Title.Size = UDim2.new(1, -20, 1, 0)
 Title.Position = UDim2.new(0, 10, 0, 0)
-Title.Text = "FISHIE HUB ACCESS"
+Title.Text = "AUTO KEY VERIFICATION"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 24
+Title.TextSize = 20
 Title.Font = Enum.Font.GothamBold
 Title.BackgroundTransparency = 1
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.ZIndex = 4
 
--- Subtitle text
-local Subtitle = Instance.new("TextLabel")
-Subtitle.Name = "Subtitle"
-Subtitle.Parent = Header
-Subtitle.Size = UDim2.new(1, -20, 0, 20)
-Subtitle.Position = UDim2.new(0, 10, 0, 30)
-Subtitle.Text = "Enter your license key to continue"
-Subtitle.TextColor3 = Color3.fromRGB(200, 200, 200)
-Subtitle.TextSize = 14
-Subtitle.Font = Enum.Font.Gotham
-Subtitle.BackgroundTransparency = 1
-Subtitle.TextXAlignment = Enum.TextXAlignment.Left
-Subtitle.ZIndex = 4
-
--- Key input container
+-- Input container
 local InputContainer = Instance.new("Frame")
 InputContainer.Name = "InputContainer"
 InputContainer.Parent = MainFrame
-InputContainer.Size = UDim2.new(0.9, 0, 0, 50)
+InputContainer.Size = UDim2.new(0.9, 0, 0, 40)
 InputContainer.Position = UDim2.new(0.05, 0, 0.4, 0)
-InputContainer.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+InputContainer.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
 InputContainer.BorderSizePixel = 0
 InputContainer.ZIndex = 3
 
@@ -109,49 +86,30 @@ TextBox.Position = UDim2.new(0, 10, 0, 0)
 TextBox.BackgroundTransparency = 1
 TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 TextBox.Text = ""
-TextBox.PlaceholderText = "Enter your key..."
+TextBox.PlaceholderText = "Type your key here..."
 TextBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
 TextBox.Font = Enum.Font.Gotham
-TextBox.TextSize = 18
+TextBox.TextSize = 16
 TextBox.ClearTextOnFocus = false
 TextBox.TextScaled = false
 TextBox.ShowNativeInput = false
 TextBox.ZIndex = 4
 
--- Submit button (now properly visible and clickable)
-local SubmitButton = Instance.new("TextButton")
-SubmitButton.Name = "SubmitButton"
-SubmitButton.Parent = MainFrame
-SubmitButton.Size = UDim2.new(0.9, 0, 0, 45)
-SubmitButton.Position = UDim2.new(0.05, 0, 0.7, 0)
-SubmitButton.BackgroundColor3 = Color3.fromRGB(80, 120, 200)
-SubmitButton.BorderSizePixel = 0
-SubmitButton.Text = "VERIFY KEY"
-SubmitButton.TextColor3 = Color3.white
-SubmitButton.TextSize = 18
-SubmitButton.Font = Enum.Font.GothamBold
-SubmitButton.ZIndex = 3
-SubmitButton.AutoButtonColor = true -- Ensures button color changes on hover
-
-local SubmitCorner = Instance.new("UICorner")
-SubmitCorner.CornerRadius = UDim.new(0, 8)
-SubmitCorner.Parent = SubmitButton
-
--- Status message label
+-- Status label
 local StatusLabel = Instance.new("TextLabel")
 StatusLabel.Name = "StatusLabel"
 StatusLabel.Parent = MainFrame
 StatusLabel.Size = UDim2.new(0.9, 0, 0, 20)
-StatusLabel.Position = UDim2.new(0.05, 0, 0.6, 0)
-StatusLabel.Text = ""
-StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+StatusLabel.Position = UDim2.new(0.05, 0, 0.7, 0)
+StatusLabel.Text = "Waiting for valid key..."
+StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
 StatusLabel.TextSize = 14
 StatusLabel.Font = Enum.Font.Gotham
 StatusLabel.BackgroundTransparency = 1
 StatusLabel.TextXAlignment = Enum.TextXAlignment.Center
 StatusLabel.ZIndex = 3
 
--- Hide the actual text being typed
+-- Hide actual text being typed
 TextBox:GetPropertyChangedSignal("Text"):Connect(function()
     local text = TextBox.Text
     if #text > 0 then
@@ -159,95 +117,97 @@ TextBox:GetPropertyChangedSignal("Text"):Connect(function()
     end
 end)
 
--- Store the real text in a hidden attribute
+-- Store real text in hidden attribute
+local realText = ""
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed or not TextBox:IsFocused() then return end
     
     if input.UserInputType == Enum.UserInputType.Keyboard then
         local key = input.KeyCode.Name
         if #key == 1 or key == "Space" then
-            local current = TextBox:GetAttribute("RealText") or ""
             if key == "Space" then
                 key = " "
             end
             
             if input.KeyCode == Enum.KeyCode.Backspace then
-                current = current:sub(1, -2)
+                realText = realText:sub(1, -2)
             else
-                current = current .. key
+                realText = realText .. key
             end
             
-            TextBox:SetAttribute("RealText", current)
-        end
-    end
-end)
-
--- Key verification function
-local function verifyKey()
-    local actualInput = TextBox:GetAttribute("RealText") or ""
-    if actualInput == "Fishie-Hub" then
-        StatusLabel.Text = "Key verified! Loading..."
-        StatusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-        
-        -- Change button to success state
-        SubmitButton.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
-        SubmitButton.Text = "SUCCESS!"
-        
-        -- Simple fade out instead of complex animation
-        for i = 1, 10 do
-            MainFrame.BackgroundTransparency = i/10
-            Header.BackgroundTransparency = i/10
-            InputContainer.BackgroundTransparency = i/10
-            SubmitButton.BackgroundTransparency = i/10
-            BackgroundDimmer.BackgroundTransparency = 0.5 + (i/20)
-            task.wait(0.05)
-        end
-        
-        KeyUI:Destroy()
-        
-        -- Place-specific execution
-        local placeActions = {
-            [12843081406] = function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/script-netizen/Protected/refs/heads/main/fishie-hub/crossovers"))()
-            end,
-            [123456789] = function()
-                loadstring(game:HttpGet("YOUR_SCRIPT_URL_2"))()
-            end,
-            [987654321] = function()
-                loadstring(game:HttpGet("YOUR_SCRIPT_URL_3"))()
+            -- Continuous verification
+            if realText == "Fishie-Hub" then
+                StatusLabel.Text = "Key verified! Loading..."
+                StatusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+                
+                -- Success animation
+                local successTween = TweenService:Create(InputContainer, TweenInfo.new(0.5), {
+                    BackgroundColor3 = Color3.fromRGB(80, 200, 80)
+                })
+                successTween:Play()
+                
+                -- Fade out UI
+                for i = 1, 10 do
+                    MainFrame.BackgroundTransparency = i/10
+                    Header.BackgroundTransparency = i/10
+                    InputContainer.BackgroundTransparency = i/10
+                    BackgroundDimmer.BackgroundTransparency = 0.5 + (i/20)
+                    task.wait(0.05)
+                end
+                
+                KeyUI:Destroy()
+                
+                -- Execute place-specific code
+                local placeActions = {
+                    [12843081406] = function()
+                        loadstring(game:HttpGet("https://raw.githubusercontent.com/script-netizen/Protected/refs/heads/main/fishie-hub/crossovers"))()
+                    end,
+                    [123456789] = function()
+                        loadstring(game:HttpGet("YOUR_SCRIPT_URL_2"))()
+                    end,
+                    [987654321] = function()
+                        loadstring(game:HttpGet("YOUR_SCRIPT_URL_3"))()
+                    end
+                }
+                
+                local currentPlaceId = game.PlaceId
+                local action = placeActions[currentPlaceId]
+                
+                if action then
+                    pcall(action)
+                else
+                    warn("No action defined for place ID:", currentPlaceId)
+                end
+            elseif #realText > 0 then
+                -- Update status if input is wrong
+                if #realText >= #"Fishie-Hub" then
+                    StatusLabel.Text = "Invalid key! Keep typing..."
+                    StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+                    
+                    -- Brief error indication
+                    local errorTween = TweenService:Create(InputContainer, TweenInfo.new(0.2), {
+                        BackgroundColor3 = Color3.fromRGB(200, 80, 80)
+                    })
+                    errorTween:Play()
+                    errorTween.Completed:Wait()
+                    TweenService:Create(InputContainer, TweenInfo.new(0.2), {
+                        BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+                    }):Play()
+                    
+                    -- Clear if completely wrong
+                    if not string.match("Fishie-Hub", "^"..realText) then
+                        realText = ""
+                        TextBox.Text = ""
+                    end
+                else
+                    StatusLabel.Text = "Typing..."
+                    StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+                end
             end
-        }
-        
-        local currentPlaceId = game.PlaceId
-        local action = placeActions[currentPlaceId]
-        
-        if action then
-            pcall(action)
-        else
-            warn("No action defined for place ID:", currentPlaceId)
         end
-    else
-        StatusLabel.Text = "Invalid key! Please try again."
-        StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-        
-        TextBox.Text = ""
-        TextBox:SetAttribute("RealText", nil)
-        
-        -- Simple red flash for error
-        local originalColor = SubmitButton.BackgroundColor3
-        SubmitButton.BackgroundColor3 = Color3.fromRGB(200, 80, 80)
-        task.wait(0.2)
-        SubmitButton.BackgroundColor3 = originalColor
-    end
-end
-
--- Connect submit events
-TextBox.FocusLost:Connect(function(enterPressed)
-    if enterPressed then
-        verifyKey()
     end
 end)
 
-SubmitButton.MouseButton1Click:Connect(function()
-    verifyKey()
-end)
+-- Auto-focus the textbox
+task.wait(0.5)
+TextBox:CaptureFocus()
